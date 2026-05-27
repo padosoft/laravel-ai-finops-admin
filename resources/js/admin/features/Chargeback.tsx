@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../lib/apiClient';
 import { PageHead } from '../layout/AppShell';
-import { Card, CardHead, CardBody, Btn, Drawer, Field, Money } from '../components/ui';
+import { Card, CardHead, CardBody, Btn, Drawer, Field } from '../components/ui';
 import { DataTable, type Column } from '../components/DataTable';
 import { useToast } from '../components/Toast';
 import { Icon } from '../lib/icons';
@@ -33,10 +33,11 @@ export function Chargeback() {
     onError: (e) => toast('Could not create', { kind: 'error', message: e instanceof ApiError ? e.message : undefined }),
   });
 
+  const currency = report.data?.currency ?? 'USD';
   const reportCols: Column<ReportRow>[] = [
     { key: 'cost_center', header: 'Cost center', render: (r) => <span>{r.name ?? r.cost_center}</span> },
     { key: 'calls', header: 'Calls', align: 'right', mono: true },
-    { key: 'cost', header: 'Cost', align: 'right', render: (r) => <Money value={Number(r.cost)} /> },
+    { key: 'cost', header: `Cost (${currency})`, align: 'right', render: (r) => <span className="mono tnum">{Number(r.cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span> },
   ];
   const centerCols: Column<CostCenter>[] = [
     { key: 'code', header: 'Code', mono: true },

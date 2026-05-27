@@ -78,7 +78,7 @@ export function Pricing() {
       <Card>
         <CardHead title="Models" sub={status.data ? `${status.data.models} models · synced ${status.data.synced_at ?? 'never'}` : undefined} actions={<input className="input sm" placeholder="search model" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search model" />} />
         <CardBody flush>
-          {models.isLoading && !models.data ? <div style={{ padding: 14, color: 'var(--fg-2)' }}>Loading…</div> : <DataTable columns={modelCols} rows={models.data?.data ?? []} rowKey={(m) => m.model} empty="No models (sync pricing first)." />}
+          {models.isLoading && !models.data ? <div style={{ padding: 14, color: 'var(--fg-2)' }}>Loading…</div> : <DataTable columns={modelCols} rows={models.data?.data ?? []} rowKey={(m) => `${m.model}:${m.provider ?? 'any'}`} empty="No models (sync pricing first)." />}
         </CardBody>
       </Card>
 
@@ -98,7 +98,7 @@ export function Pricing() {
         footer={
           <>
             <Btn variant="ghost" onClick={() => setCreating(false)}>Cancel</Btn>
-            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || !form.input_cost_per_token || addOverride.isPending}>Save</Btn>
+            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || !form.input_cost_per_token || !form.output_cost_per_token || addOverride.isPending}>Save</Btn>
           </>
         }
       >
