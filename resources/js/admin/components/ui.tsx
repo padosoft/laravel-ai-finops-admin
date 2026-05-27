@@ -4,6 +4,9 @@ import { fmtUsd } from '../lib/format';
 
 export type Tone = 'green' | 'red' | 'yellow' | 'blue' | 'muted';
 
+/** CSS color tokens (map to `--{token}` design-system variables). */
+export type ColorToken = 'green' | 'red' | 'yellow' | 'accent' | 'purple' | 'cyan' | 'fg-1' | 'fg-2';
+
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`card ${className}`}>{children}</div>;
 }
@@ -75,7 +78,7 @@ export function Btn({
   );
 }
 
-export function Kpi({ icon, label, value, sub, tone }: { icon: string; label: string; value: ReactNode; sub?: string; tone?: string }) {
+export function Kpi({ icon, label, value, sub, tone }: { icon: string; label: string; value: ReactNode; sub?: string; tone?: ColorToken }) {
   return (
     <div className="kpi">
       <div className="kpi-label">
@@ -139,8 +142,8 @@ export function Drawer({
   if (!open) return null;
   return (
     <>
-      <div className="overlay" onClick={onClose} />
-      <div className="drawer" role="dialog" aria-label={title}>
+      <div className="overlay" onClick={onClose} aria-hidden="true" />
+      <div className="drawer" role="dialog" aria-modal="true" aria-label={title}>
         <div className="drawer-head">
           <div>
             <h3 className="drawer-title">{title}</h3>
@@ -175,8 +178,8 @@ export function ConfirmModal({
   if (!open) return null;
   return (
     <>
-      <div className="overlay" onClick={onCancel} />
-      <div className="drawer" role="alertdialog" aria-label={title} style={{ width: 'min(420px, 92vw)' }}>
+      <div className="overlay" onClick={onCancel} aria-hidden="true" />
+      <div className="drawer" role="alertdialog" aria-modal="true" aria-label={title} style={{ width: 'min(420px, 92vw)' }}>
         <div className="drawer-head">
           <h3 className="drawer-title">{title}</h3>
         </div>

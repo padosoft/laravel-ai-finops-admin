@@ -44,6 +44,18 @@ export function DataTable<T extends Record<string, unknown>>({
             key={rowKey(row, i)}
             className={onRowClick ? 'clickable' : undefined}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
+            role={onRowClick ? 'button' : undefined}
+            tabIndex={onRowClick ? 0 : undefined}
+            onKeyDown={
+              onRowClick
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onRowClick(row);
+                    }
+                  }
+                : undefined
+            }
           >
             {columns.map((c) => (
               <td key={c.key} className={[c.align === 'right' ? 'num' : '', c.mono ? 'mono' : ''].filter(Boolean).join(' ') || undefined}>

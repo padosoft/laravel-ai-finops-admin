@@ -73,14 +73,34 @@ export function LineChart({
           </text>
         ),
       )}
-      {series.map((s, si) => {
+      {series.flatMap((s, si) => {
         const color = s.color ?? 'var(--accent)';
-        const segs: string[] = [];
+        const baseline = pad.t + h;
+        // Split into contiguous non-null runs so gaps (null) break the line/area
+        // instead of connecting across missing data.
+        const runs: { i: number; v: number }[][] = [];
+        let run: { i: number; v: number }[] = [];
         s.values.forEach((v, i) => {
-          if (v == null) return;
-          segs.push(`${segs.length === 0 ? 'M' : 'L'} ${sx(i).toFixed(1)},${sy(v).toFixed(1)}`);
+          if (v == null) {
+            if (run.length) runs.push(run);
+            run = [];
+          } else {
+            run.push({ i, v });
+          }
         });
-        return <path key={si} d={segs.join(' ')} fill="none" stroke={color} strokeWidth={s.strokeWidth ?? 1.75} strokeLinejoin="round" strokeLinecap="round" strokeDasharray={s.dashed ? '4 4' : undefined} />;
+        if (run.length) runs.push(run);
+
+        return runs.flatMap((pts, ri) => {
+          const line = pts.map((p, k) => `${k === 0 ? 'M' : 'L'} ${sx(p.i).toFixed(1)},${sy(p.v).toFixed(1)}`).join(' ');
+          const nodes = [
+            <path key={`l-${si}-${ri}`} d={line} fill="none" stroke={color} strokeWidth={s.strokeWidth ?? 1.75} strokeLinejoin="round" strokeLinecap="round" strokeDasharray={s.dashed ? '4 4' : undefined} />,
+          ];
+          if (s.fill) {
+            const area = `${line} L ${sx(pts[pts.length - 1].i).toFixed(1)},${baseline.toFixed(1)} L ${sx(pts[0].i).toFixed(1)},${baseline.toFixed(1)} Z`;
+            nodes.unshift(<path key={`f-${si}-${ri}`} d={area} fill={color} fillOpacity={0.14} stroke="none" />);
+          }
+          return nodes;
+        });
       })}
     </svg>
   );
@@ -101,18 +121,26 @@ export function DonutChart({
   centerValue?: string;
   centerLabel?: string;
 }) {
+  const palette = colors.length ? colors : ['var(--accent)', 'var(--purple)', 'var(--green)', 'var(--cyan)', 'var(--yellow)', 'var(--fg-3)'];
   const r = size / 2;
   const inner = r - thickness;
   const total = values.reduce((a, b) => a + b, 0) || 1;
+  const nonZero = values.filter((v) => v > 0).length;
   let angle = -Math.PI / 2;
   const arcs = values.map((v, i) => {
+    const fill = palette[i % palette.length];
+    // A single full slice (or one equal to the total) is 2π — its arc endpoints
+    // coincide and SVG drops the path, so render it as a full ring instead.
+    if (v > 0 && nonZero === 1) {
+      return <circle key={i} cx={r} cy={r} r={(r + inner) / 2} fill="none" stroke={fill} strokeWidth={thickness} />;
+    }
     const slice = (v / total) * Math.PI * 2;
     const a0 = angle;
     const a1 = angle + slice;
     angle = a1;
     const large = slice > Math.PI ? 1 : 0;
     const d = `M ${r + r * Math.cos(a0)} ${r + r * Math.sin(a0)} A ${r} ${r} 0 ${large} 1 ${r + r * Math.cos(a1)} ${r + r * Math.sin(a1)} L ${r + inner * Math.cos(a1)} ${r + inner * Math.sin(a1)} A ${inner} ${inner} 0 ${large} 0 ${r + inner * Math.cos(a0)} ${r + inner * Math.sin(a0)} Z`;
-    return <path key={i} d={d} fill={colors[i % colors.length]} />;
+    return <path key={i} d={d} fill={fill} />;
   });
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
