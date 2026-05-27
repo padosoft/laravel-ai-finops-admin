@@ -2,7 +2,18 @@
 
 Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
 
-## 2026-05-27
+## 2026-05-27 — Admin complete
+
+### T2–T8 — DONE
+- T2 primitives + charts (ported SVG). T3 Dashboard/Usage/Trace. T4 Budgets/Policies/Approvals.
+  T5 Pricing/Chargeback/Alerts. T6 Forecast/Routing/What-if/Price-watch/Credits.
+  T7 Copilot/Footprint/Settings/Diagnostics. **All 19 nav screens wired to the real core API (no mocks).**
+- T8: WOW README + tag/release. Security: removed dummy test APP_KEY (GitGuardian), ephemeral key in tests.
+- Tests: Vitest 35 + PHPUnit 8, build green, CI PHP+JS. Each PR went through CI + Codex/Copilot review.
+- **Known follow-up:** Playwright e2e infra (testbench serve + seed + browser) not yet wired — screens are
+  covered by Vitest component/interaction tests with a fetch mock. Add Playwright per-screen in a later pass.
+
+
 
 ### M5.T1 — Admin foundation (branch `feat/admin-foundation`) — COMPLETE (pending PR→main)
 - Package scaffolding: composer.json (require `padosoft/laravel-ai-finops` ^1.0 from Packagist),
