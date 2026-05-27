@@ -28,7 +28,14 @@ export function Settings() {
   const kill = useQuery({ queryKey: ['settings', 'kill-switch'], queryFn: () => api.get<{ global_config: boolean; data: KillSwitch[] }>('/settings/kill-switch') });
 
   const setKs = useMutation({
-    mutationFn: () => api.post('/settings/kill-switch', { scope_type: ksForm.scope_type, scope_id: ksForm.scope_id || null, active: ksForm.active, reason: ksForm.reason || null }),
+    mutationFn: () =>
+      api.post('/settings/kill-switch', {
+        scope_type: ksForm.scope_type,
+        // Force null for global so a stale target from another scope isn't sent.
+        scope_id: ksForm.scope_type === 'global' ? null : ksForm.scope_id || null,
+        active: ksForm.active,
+        reason: ksForm.reason || null,
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['settings', 'kill-switch'] });
       setKsForm({ scope_type: 'provider', scope_id: '', active: true, reason: '' });
@@ -84,6 +91,7 @@ export function Settings() {
                 </select>
               </Field>
               {ksForm.scope_type !== 'global' && <Field label="Target"><input className="input" value={ksForm.scope_id} onChange={(e) => setKsForm({ ...ksForm, scope_id: e.target.value })} aria-label="Kill switch target" /></Field>}
+              <Field label="Reason (optional)"><input className="input" value={ksForm.reason} onChange={(e) => setKsForm({ ...ksForm, reason: e.target.value })} aria-label="Kill switch reason" /></Field>
               <label className="row" style={{ gap: 6 }}><input type="checkbox" checked={ksForm.active} onChange={(e) => setKsForm({ ...ksForm, active: e.target.checked })} /> active</label>
               <Btn variant="primary" onClick={() => setKs.mutate()} disabled={setKs.isPending}>Apply</Btn>
             </div>
