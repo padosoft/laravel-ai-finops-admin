@@ -1,0 +1,12 @@
+/vendor/
+/node_modules/
+composer.lock
+.phpunit.result.cache
+.phpunit.cache/
+/test-results/
+/playwright-report/
+.idea/
+.vscode/
+.DS_Store
+*.log
+tsconfig.tsbuildinfo

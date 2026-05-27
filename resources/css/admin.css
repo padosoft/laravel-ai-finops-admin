@@ -1,0 +1,6 @@
+/* @import rules must precede all other rules — fonts first. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Tailwind v4 first (preflight/utilities), then the AI FinOps design system so
+   its explicit, dense styles win on conflicts. */
+@import 'tailwindcss';
+@import './design-system.css';

@@ -1,0 +1,70 @@
+{
+    "name": "padosoft/laravel-ai-finops-admin",
+    "description": "Professional enterprise web admin panel (React + Vite + Tailwind) for padosoft/laravel-ai-finops — dashboards, budgets, policies, approvals, routing, forecasting and FinOps governance for AI spend.",
+    "type": "library",
+    "license": "Apache-2.0",
+    "keywords": [
+        "laravel",
+        "ai",
+        "finops",
+        "admin",
+        "react",
+        "vite",
+        "tailwind",
+        "dashboard",
+        "cost",
+        "governance",
+        "laravel-ai"
+    ],
+    "authors": [
+        {
+            "name": "Lorenzo Padovani",
+            "email": "lorenzo.padovani@padosoft.com",
+            "homepage": "https://github.com/padosoft"
+        }
+    ],
+    "homepage": "https://github.com/padosoft/laravel-ai-finops-admin",
+    "support": {
+        "issues": "https://github.com/padosoft/laravel-ai-finops-admin/issues",
+        "source": "https://github.com/padosoft/laravel-ai-finops-admin"
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/contracts": "^12.0 || ^13.0",
+        "illuminate/routing": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "illuminate/view": "^12.0 || ^13.0",
+        "padosoft/laravel-ai-finops": "^1.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpunit/phpunit": "^11.0 || ^12.0",
+        "laravel/pint": "^1.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Padosoft\\LaravelAiFinOpsAdmin\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Padosoft\\LaravelAiFinOpsAdmin\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Padosoft\\LaravelAiFinOpsAdmin\\LaravelAiFinOpsAdminServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
