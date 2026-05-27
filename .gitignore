@@ -1,6 +1,5 @@
 /vendor/
 /node_modules/
-/public/build/
 composer.lock
 .phpunit.result.cache
 .phpunit.cache/

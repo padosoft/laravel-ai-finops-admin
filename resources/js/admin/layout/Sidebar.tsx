@@ -56,9 +56,12 @@ export function Sidebar() {
           </div>
         </div>
         {config.logoutUrl && (
-          <a className="iconbtn" href={config.logoutUrl} title="Logout">
-            <Icon name="log-out" />
-          </a>
+          <form method="POST" action={config.logoutUrl} style={{ display: 'contents' }}>
+            <input type="hidden" name="_token" value={config.csrfToken} />
+            <button className="iconbtn" type="submit" title="Logout" aria-label="Logout">
+              <Icon name="log-out" />
+            </button>
+          </form>
         )}
       </div>
     </>
