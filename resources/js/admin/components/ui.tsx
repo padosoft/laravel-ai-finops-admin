@@ -55,6 +55,15 @@ export function Money({ value, decimals = 2 }: { value: number; decimals?: numbe
   return <span className="mono tnum">{fmtUsd(value, decimals)}</span>;
 }
 
+export function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="col" style={{ gap: 4 }}>
+      <span style={{ fontSize: 11, color: 'var(--fg-2)' }}>{label}</span>
+      {children}
+    </label>
+  );
+}
+
 export function Btn({
   children,
   variant,
