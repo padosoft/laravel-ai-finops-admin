@@ -25,11 +25,19 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   });
 
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+  let data: unknown = null;
+  try {
+    if (text) data = JSON.parse(text);
+  } catch {
+    // Server returned a non-JSON body (e.g. HTML login redirect on 401).
+    // data stays null; the res.ok check below will build an ApiError from statusText.
+  }
 
   if (!res.ok) {
-    const message = (data && (data.message as string)) || res.statusText;
-    throw new ApiError(res.status, message, data?.errors);
+    const raw = data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
+    const msg = (typeof raw.message === 'string' ? raw.message : null) || res.statusText;
+    const errors = raw.errors as Record<string, string[]> | undefined;
+    throw new ApiError(res.status, msg, errors);
   }
 
   return data as T;

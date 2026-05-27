@@ -55,9 +55,11 @@ export function Sidebar() {
             <small>Admin · Padosoft</small>
           </div>
         </div>
-        <a className="iconbtn" href={`${config.adminBase}/logout`} title="Logout">
-          <Icon name="log-out" />
-        </a>
+        {config.logoutUrl && (
+          <a className="iconbtn" href={config.logoutUrl} title="Logout">
+            <Icon name="log-out" />
+          </a>
+        )}
       </div>
     </>
   );

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Padosoft\LaravelAiFinOpsAdmin\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Padosoft\LaravelAiFinOpsAdmin\Support\ViteManifest;
+use PHPUnit\Framework\TestCase;
 
 class ViteManifestTest extends TestCase
 {

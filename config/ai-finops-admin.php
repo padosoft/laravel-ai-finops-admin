@@ -14,7 +14,9 @@ return [
 
     'route' => [
         'prefix' => env('AI_FINOPS_ADMIN_PREFIX', 'admin/ai-finops'),
-        'middleware' => ['web'],
+        // Include an authentication guard here. The default `auth` uses the
+        // Laravel web guard. Swap for `auth:admin` or any custom guard as needed.
+        'middleware' => ['web', 'auth'],
     ],
 
     /*
@@ -24,4 +26,11 @@ return [
     'api_base' => env('AI_FINOPS_ADMIN_API_BASE'),
 
     'app_name' => env('AI_FINOPS_ADMIN_APP_NAME', 'AI FinOps'),
+
+    /*
+    | Absolute URL for the logout action rendered in the admin sidebar.
+    | Defaults to `/logout` (Laravel Breeze / Jetstream convention).
+    | Override when your app uses a different logout URL (e.g. `/admin/logout`).
+    */
+    'logout_url' => env('AI_FINOPS_ADMIN_LOGOUT_URL', '/logout'),
 ];

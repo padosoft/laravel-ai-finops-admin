@@ -39,6 +39,8 @@ export const ICONS: Record<string, string> = {
 export function Icon({ name, size = 14 }: { name: string; size?: number }) {
   const path = ICONS[name];
   if (!path) return null;
+  // dangerouslySetInnerHTML is safe here: `path` is a statically-compiled string
+  // constant from the ICONS map above — it never comes from user input or the API.
   return (
     <svg
       width={size}

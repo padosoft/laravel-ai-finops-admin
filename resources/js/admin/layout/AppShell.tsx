@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { config } from '../config';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 
@@ -10,7 +11,7 @@ export function AppShell() {
       </aside>
       <main className="main">
         <header className="topbar">
-          <Topbar crumbs={[{ label: 'AI FinOps', to: '/' }]} />
+          <Topbar crumbs={[{ label: config.appName, to: '/' }]} />
         </header>
         <div className="content">
           <div className="page">

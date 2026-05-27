@@ -5,6 +5,7 @@ export type Bootstrap = {
   adminBase: string;
   csrfToken: string;
   appName: string;
+  logoutUrl: string | null;
   user: AdminUser;
 };
 
@@ -19,6 +20,7 @@ export const config: Bootstrap = window.AIFINOPS_ADMIN ?? {
   adminBase: '/admin/ai-finops',
   csrfToken: '',
   appName: 'AI FinOps',
+  logoutUrl: '/logout',
   user: null,
 };
 

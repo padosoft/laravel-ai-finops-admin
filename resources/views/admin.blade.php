@@ -5,12 +5,15 @@
         ?: '/'.ltrim((string) config('ai-finops.routes.prefix', 'api/ai-finops'), '/');
     $assetBase = url('vendor/ai-finops-admin');
     $vite = ViteManifest::package($assetBase)->entry();
+    $u = auth()->user();
     $bootstrap = [
-        'apiBase' => $apiBase,
-        'adminBase' => url(config('ai-finops-admin.route.prefix', 'admin/ai-finops')),
-        'csrfToken' => csrf_token(),
-        'appName' => config('ai-finops-admin.app_name', 'AI FinOps'),
-        'user' => optional(auth()->user())->only(['name', 'email']) ?? null,
+        'apiBase'    => $apiBase,
+        'adminBase'  => url(config('ai-finops-admin.route.prefix', 'admin/ai-finops')),
+        'csrfToken'  => csrf_token(),
+        'appName'    => config('ai-finops-admin.app_name', 'AI FinOps'),
+        'logoutUrl'  => config('ai-finops-admin.logout_url', '/logout'),
+        // Avoid ->only() because not all Authenticatable implementations are Eloquent.
+        'user' => $u ? ['name' => $u->name ?? null, 'email' => $u->email ?? null] : null,
     ];
 @endphp
 <!doctype html>

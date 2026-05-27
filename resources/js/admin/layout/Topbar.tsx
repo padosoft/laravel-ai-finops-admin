@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Icon } from '../lib/icons';
 
 function applyTheme(theme: string) {
@@ -23,7 +24,7 @@ export function Topbar({ crumbs }: { crumbs: { label: string; to?: string }[] })
         {crumbs.map((c, i) => (
           <span key={i}>
             {i > 0 && <span className="sep">/</span>}
-            {c.to ? <a href={c.to}>{c.label}</a> : <b>{c.label}</b>}
+            {c.to ? <Link to={c.to}>{c.label}</Link> : <b>{c.label}</b>}
           </span>
         ))}
       </div>
