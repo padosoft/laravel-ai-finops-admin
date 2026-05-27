@@ -66,6 +66,61 @@ side is a thin Laravel package: a Blade shell + a Vite manifest reader serving t
 `config/ai-finops-admin.php`: `route.prefix` (default `admin/ai-finops`), `route.middleware`
 (default `['web','auth']`), `api_base` (defaults to the core prefix), `app_name`, `logout_url`.
 
+## Screenshots
+
+A tour of the panel. Every screen is wired to live `laravel-ai-finops` endpoints — no mocks.
+
+### Dashboard
+
+KPIs, spend trend, top-models donut, budget burn and anomalies — in both themes.
+
+![Dashboard (light)](resources/screenshots/Ai-Finops-Web-Panel-dashboard.png)
+![Dashboard (dark)](resources/screenshots/Ai-Finops-Web-Panel-dashboard-dark.png)
+
+### Usage & Call/Trace
+
+Filterable ledger, per-call detail and the agentic per-step cost flame-graph.
+
+![Usage Explorer](resources/screenshots/Ai-Finops-Web-Panel-usage.png)
+![Usage detail](resources/screenshots/Ai-Finops-Web-Panel-usage-details.png)
+![Call / Trace](resources/screenshots/Ai-Finops-Web-Panel-call-trace.png)
+
+### Pricing
+
+LiteLLM mirror + sync, with local per-model overrides.
+
+![Pricing registry](resources/screenshots/Ai-Finops-Web-Panel-pricing-registry.png)
+![Pricing override](resources/screenshots/Ai-Finops-Web-Panel-pricing-registry-override.png)
+
+### Governance — Budgets, Policies, Approvals, Chargeback, Alerts
+
+Hierarchical budgets, the policy DSL, the approval queue, chargeback allocation and the alert center.
+
+![Budgets](resources/screenshots/Ai-Finops-Web-Panel-budget.png)
+![Policies (DSL)](resources/screenshots/Ai-Finops-Web-Panel-policies-DSL.png)
+![Approvals](resources/screenshots/Ai-Finops-Web-Panel-approvals.png)
+![Chargeback](resources/screenshots/Ai-Finops-Web-Panel-chargeback.png)
+![Alerts](resources/screenshots/Ai-Finops-Web-Panel-alert.png)
+
+### Intelligence — Forecast, Routing, What-if, Price Watch, Credits
+
+Month-end forecasting & anomalies, cost-aware routing, the what-if simulator, the provider price watcher and prepaid credit pools.
+
+![Forecast & anomalies](resources/screenshots/Ai-Finops-Web-Panel-forecast-e-anomaly.png)
+![Cost-aware routing](resources/screenshots/Ai-Finops-Web-Panel-cost-aware-routing.png)
+![What-if simulator](resources/screenshots/Ai-Finops-Web-Panel-what-if-simulator.png)
+![Price watcher](resources/screenshots/Ai-Finops-Web-Panel-price-whatcher.png)
+![Credit pools](resources/screenshots/Ai-Finops-Web-Panel-credit-pools.png)
+
+### Copilot, CO₂/ESG, Settings & Diagnostics
+
+A natural-language FinOps copilot, carbon/ESG footprint, settings and the diagnostics workbench.
+
+![FinOps Copilot](resources/screenshots/Ai-Finops-Web-Panel-Copilot.png)
+![CO₂ / ESG](resources/screenshots/Ai-Finops-Web-Panel-ESG.png)
+![Settings](resources/screenshots/Ai-Finops-Web-Panel-settings.png)
+![Diagnostics](resources/screenshots/Ai-Finops-Web-Panel-diagnostic.png)
+
 ## Testing
 
 ```bash
