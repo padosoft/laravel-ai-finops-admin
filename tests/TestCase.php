@@ -20,7 +20,10 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app): void
     {
-        // The admin shell route only renders a view; drop the `web` group (not
+        // Ephemeral, per-run app key — never committed (no Laravel APP_KEY pattern in the repo).
+        $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+
+        // The admin shell route only renders a view; drop the `web`/`auth` group (not
         // registered in the package test context) so the smoke test can reach it.
         $app['config']->set('ai-finops-admin.route.middleware', []);
     }

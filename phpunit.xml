@@ -20,6 +20,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="APP_KEY" value="base64:2fl+Ktv1bUm6e0W8q5oVz0Q2y2Q2y2Q2y2Q2y2Q2y2Q="/>
+        <!-- No APP_KEY committed: the test app key is generated ephemerally in
+             tests/TestCase.php (avoids a Laravel APP_KEY pattern in the repo). -->
     </php>
 </phpunit>
