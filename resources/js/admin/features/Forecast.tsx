@@ -21,6 +21,7 @@ export function Forecast() {
       qc.invalidateQueries({ queryKey: ['anomalies'] });
       toast('Anomaly acknowledged', { kind: 'success' });
     },
+    onError: () => toast('Could not acknowledge', { kind: 'error' }),
   });
 
   const cols: Column<Anomaly>[] = [

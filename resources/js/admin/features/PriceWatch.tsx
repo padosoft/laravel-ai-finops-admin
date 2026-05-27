@@ -25,10 +25,12 @@ export function PriceWatch() {
       setModel('');
       toast('Watching model', { kind: 'success' });
     },
+    onError: () => toast('Could not subscribe', { kind: 'error' }),
   });
   const unsubscribe = useMutation({
     mutationFn: (id: number) => api.del(`/price-watch/subscriptions/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['price-watch', 'subscriptions'] }),
+    onError: () => toast('Could not unsubscribe', { kind: 'error' }),
   });
   const capture = useMutation({
     mutationFn: () => api.post('/price-watch/capture'),
@@ -36,6 +38,7 @@ export function PriceWatch() {
       qc.invalidateQueries({ queryKey: ['price-watch', 'changes'] });
       toast('Snapshot captured', { kind: 'success' });
     },
+    onError: () => toast('Capture failed', { kind: 'error' }),
   });
 
   const changeCols: Column<Change>[] = [

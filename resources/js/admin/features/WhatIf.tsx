@@ -55,8 +55,8 @@ export function WhatIf() {
             <div className="kpi-grid cols-4" style={{ marginTop: 16 }} data-testid="whatif-result">
               <Kpi icon="activity" label="Calls" value={String(result.calls)} />
               <Kpi icon="dollar-sign" label="Current" value={fmtUsd(result.current_cost)} sub={result.currency} />
-              <Kpi icon="dollar-sign" label="Projected" value={result.priced ? fmtUsd(result.projected_cost ?? 0) : '—'} />
-              <Kpi icon="trending-down" label="Savings" value={result.priced ? fmtUsd(result.savings ?? 0) : 'n/a'} tone={result.priced && (result.savings ?? 0) > 0 ? 'green' : 'yellow'} />
+              <Kpi icon="dollar-sign" label="Projected" value={result.projected_cost != null ? fmtUsd(result.projected_cost) : '—'} />
+              <Kpi icon="trending-down" label="Savings" value={result.savings != null ? fmtUsd(result.savings) : 'n/a'} tone={result.savings != null && result.savings > 0 ? 'green' : 'yellow'} />
             </div>
           )}
           {result && !result.priced && <div style={{ marginTop: 8, color: 'var(--yellow)', fontSize: 12 }}>{result.message}</div>}
