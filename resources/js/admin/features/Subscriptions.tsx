@@ -29,11 +29,14 @@ function isActive(w: SubWindow): boolean {
   return true;
 }
 
+const toDateInput = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
+
 export function Subscriptions() {
   const qc = useQueryClient();
   const toast = useToast();
-  const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState(emptyForm);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState({ ...emptyForm, enabled: true });
   const [endingId, setEndingId] = useState<number | null>(null);
   const [endingNowId, setEndingNowId] = useState<number | null>(null);
 
@@ -43,9 +46,30 @@ export function Subscriptions() {
     qc.invalidateQueries({ queryKey: ['subscription-windows'] });
   };
 
-  const create = useMutation({
-    mutationFn: () =>
-      api.post('/pricing/subscription-windows', {
+  const openCreate = () => {
+    setEditingId(null);
+    setForm({ ...emptyForm, enabled: true });
+    setDrawerOpen(true);
+  };
+
+  const openEdit = (w: SubWindow) => {
+    setEditingId(w.id);
+    setForm({
+      provider: w.provider,
+      label: w.label,
+      starts_at: toDateInput(w.starts_at),
+      ends_at: toDateInput(w.ends_at),
+      model: w.model ?? '',
+      tenant_id: w.tenant_id ?? '',
+      note: w.note ?? '',
+      enabled: w.enabled,
+    });
+    setDrawerOpen(true);
+  };
+
+  const save = useMutation({
+    mutationFn: () => {
+      const payload = {
         provider: form.provider,
         label: form.label,
         starts_at: form.starts_at || null,
@@ -53,12 +77,17 @@ export function Subscriptions() {
         model: form.model || null,
         tenant_id: form.tenant_id || null,
         note: form.note || null,
-        enabled: true,
-      }),
+        enabled: form.enabled,
+      };
+      return editingId === null
+        ? api.post('/pricing/subscription-windows', payload)
+        : api.put(`/pricing/subscription-windows/${editingId}`, payload);
+    },
     onSuccess: () => {
       invalidate();
-      setCreating(false);
-      setForm(emptyForm);
+      setDrawerOpen(false);
+      setEditingId(null);
+      setForm({ ...emptyForm, enabled: true });
       toast('Subscription saved', { kind: 'success' });
     },
     onError: (e) => toast('Could not save subscription', { kind: 'error', message: e instanceof ApiError ? e.message : undefined }),
@@ -115,6 +144,9 @@ export function Subscriptions() {
               End now
             </Btn>
           )}
+          <Btn size="sm" variant="ghost" onClick={() => openEdit(w)} ariaLabel={`Edit ${w.label}`}>
+            Edit
+          </Btn>
           <Btn size="sm" variant="ghost" onClick={() => setEndingId(w.id)} ariaLabel={`Delete ${w.label}`}>
             <Icon name="x" />
           </Btn>
@@ -129,7 +161,7 @@ export function Subscriptions() {
         title="Subscriptions"
         subtitle="Flat-rate plans (canoni) — covered calls cost €0 while active"
         actions={
-          <Btn variant="primary" size="sm" onClick={() => setCreating(true)}>
+          <Btn variant="primary" size="sm" onClick={openCreate}>
             <Icon name="plus" /> Add subscription
           </Btn>
         }
@@ -143,13 +175,13 @@ export function Subscriptions() {
       </Card>
 
       <Drawer
-        open={creating}
-        onClose={() => setCreating(false)}
-        title="Add subscription (canone)"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title={editingId === null ? 'Add subscription (canone)' : 'Edit subscription'}
         footer={
           <>
-            <Btn variant="ghost" onClick={() => setCreating(false)}>Cancel</Btn>
-            <Btn variant="primary" onClick={() => create.mutate()} disabled={!form.provider || !form.label || create.isPending}>Save</Btn>
+            <Btn variant="ghost" onClick={() => setDrawerOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={() => save.mutate()} disabled={!form.provider || !form.label || save.isPending}>Save</Btn>
           </>
         }
       >
@@ -161,6 +193,10 @@ export function Subscriptions() {
           <Field label="Model scope (optional, blank = all)"><input className="input" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} aria-label="Model scope" /></Field>
           <Field label="Tenant scope (optional)"><input className="input" value={form.tenant_id} onChange={(e) => setForm({ ...form, tenant_id: e.target.value })} aria-label="Tenant scope" /></Field>
           <Field label="Note (optional)"><input className="input" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} aria-label="Note" /></Field>
+          <label className="row" style={{ gap: 8, alignItems: 'center' }}>
+            <input type="checkbox" checked={form.enabled} onChange={(e) => setForm({ ...form, enabled: e.target.checked })} aria-label="Enabled" />
+            <span>Enabled</span>
+          </label>
         </div>
       </Drawer>
 

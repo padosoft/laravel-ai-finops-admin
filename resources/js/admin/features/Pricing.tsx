@@ -85,7 +85,9 @@ export function Pricing() {
         note: form.note || null,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['pricing', 'overrides'] });
+      // Invalidate the whole pricing namespace: a new manual price also surfaces
+      // in the merged models catalog (source=manual), not just the overrides list.
+      qc.invalidateQueries({ queryKey: ['pricing'] });
       setCreating(false);
       setForm(emptyForm);
       toast('Override saved', { kind: 'success' });

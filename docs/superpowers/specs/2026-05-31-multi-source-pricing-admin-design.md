@@ -38,7 +38,7 @@ env tie-break. Two new cost concepts: **flat-rate subscription coverage windows*
   optional tenant/model scope, `enabled`, `note`. Make `ends_at` easy to shorten ("end now") for the
   exhaustion case. Covered calls then show €0 + `covered` status downstream.
 
-### 4. Price Watcher (`Ai-Finops-Web-Panel-price-whatcher`)
+### 4. Price Watcher (screenshot asset is `Ai-Finops-Web-Panel-price-whatcher.png` — filename misspelled in the repo)
 - Add a **source** dimension to snapshots/comparisons.
 
 ### 5. Usage / Call-trace detail (`Ai-Finops-Web-Panel-call-trace` / `usage-details`)

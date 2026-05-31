@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+  Standalone entry used ONLY by the Playwright e2e harness (vite.e2e.config.ts).
+  In production the SPA is mounted by the package's Blade shell (resources/views/admin.blade.php);
+  this file lets Playwright drive the real built React app in a browser without a Laravel host.
+  The API is stubbed per-test via page.route('**/api/ai-finops/**', ...).
+-->
+<html lang="en" data-theme="dark" data-accent="blue">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="e2e" />
+    <title>AI FinOps (e2e)</title>
+  </head>
+  <body>
+    <div id="aifinops-admin"></div>
+    <script>
+      window.AIFINOPS_ADMIN = {
+        apiBase: '/api/ai-finops',
+        adminBase: '/',
+        csrfToken: 'e2e',
+        appName: 'AI FinOps',
+        logoutUrl: null,
+        user: { name: 'E2E', email: 'e2e@example.com' },
+      };
+    </script>
+    <script type="module" src="/resources/js/admin/main.tsx"></script>
+  </body>
+</html>
