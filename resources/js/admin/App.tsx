@@ -5,6 +5,7 @@ import { Diagnostics } from './features/Diagnostics';
 import { Usage } from './features/Usage';
 import { Trace } from './features/Trace';
 import { Pricing } from './features/Pricing';
+import { Subscriptions } from './features/Subscriptions';
 import { Budgets } from './features/Budgets';
 import { Policies } from './features/Policies';
 import { Approvals } from './features/Approvals';
@@ -29,6 +30,7 @@ export function App() {
         <Route path="usage" element={<Usage />} />
         <Route path="trace" element={<Trace />} />
         <Route path="pricing" element={<Pricing />} />
+        <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="budgets" element={<Budgets />} />
         <Route path="policies" element={<Policies />} />
         <Route path="approvals" element={<Approvals />} />

@@ -2,6 +2,20 @@
 
 Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
 
+## 2026-06-01 — Multi-source pricing UI (mirrors backend M8) — IMPLEMENTED, PR pending
+
+- Handoff spec: `docs/superpowers/specs/2026-05-31-multi-source-pricing-admin-design.md`.
+- **Pricing screen**: model rows now show a **source** badge (litellm/openrouter/manual) + a `?source=`
+  filter; per-source sync status line + `has_openrouter_key` indicator; "Add price" drawer gains
+  **unit (per_token/per_million)**, **currency (USD/EUR)**, effective_from and note (regolo support).
+- **New Subscriptions screen** (`/subscriptions`, nav under Consumption): canoni CRUD over
+  `pricing/subscription-windows` — active windows flagged `covered · €0`, "End now" (PUT ends_at),
+  delete via ConfirmModal.
+- `Btn` gained an optional `ariaLabel` (accessibility + testability).
+- Tests: **Vitest 41** (was 35) + **PHPUnit 8**, `npm run build` (tsc+vite) green.
+- **NEXT:** local Copilot `/review` → push → PR `feat/admin-multisource-pricing`→main + @copilot → CI+Copilot
+  green → merge → tag/release.
+
 ## 2026-05-27 — Admin complete
 
 ### T2–T8 — DONE
