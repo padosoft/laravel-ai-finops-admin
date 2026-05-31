@@ -123,7 +123,7 @@ export function Subscriptions() {
       setEndingId(null);
       toast('Subscription deleted', { kind: 'success' });
     },
-    onError: () => toast('Could not delete', { kind: 'error' }),
+    onError: () => { setEndingId(null); toast('Could not delete', { kind: 'error' }); },
   });
 
   const cols: Column<SubWindow>[] = [
