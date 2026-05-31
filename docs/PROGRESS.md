@@ -2,7 +2,7 @@
 
 Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
 
-## 2026-06-01 — Multi-source pricing UI (mirrors backend M8) — IMPLEMENTED, PR pending
+## 2026-06-01 — Multi-source pricing UI (mirrors backend M8) — ✅ MERGED (PR #14) + RELEASED v1.1.0
 
 - Handoff spec: `docs/superpowers/specs/2026-05-31-multi-source-pricing-admin-design.md`.
 - **Pricing screen**: model rows now show a **source** badge (litellm/openrouter/manual) + a `?source=`
@@ -19,9 +19,11 @@ Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
   `e2e/pricing.spec.ts` + `e2e/subscriptions.spec.ts` cover all new interactions → **16 e2e green**
   (8 × 2 projects). CI gains an `e2e` job.
 - Also: addOverride invalidates the whole `['pricing']` key so new manual prices surface in the catalog.
-- Tests: **Vitest 41** + **PHPUnit 8** + **Playwright 16** + build, all green.
-- **NEXT:** local Copilot `/review` → push → PR `feat/admin-multisource-pricing`→main + @copilot → CI+Copilot
-  green → merge → tag/release v1.1.0.
+- Tests: **Vitest 42** + **PHPUnit 8** + **Playwright 16** + build, all green.
+- **Closed:** 3 local Copilot `/review` rounds (all applied) → PR #14 → @copilot → CI green incl. the new
+  **Playwright e2e** job → squash-merged → **tag + release v1.1.0**.
+- **NEXT:** nothing pending. Future: Phase-2 OpenRouter per-endpoint prices (backend `use_endpoints`) would
+  add an endpoint breakdown view here.
 
 ## 2026-05-27 — Admin complete
 
