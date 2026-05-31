@@ -38,7 +38,7 @@ export function Subscriptions() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({ ...emptyForm, enabled: true });
   const [endingId, setEndingId] = useState<number | null>(null);
-  const [endingNowId, setEndingNowId] = useState<number | null>(null);
+  const [confirmEnd, setConfirmEnd] = useState<SubWindow | null>(null);
 
   const windows = useQuery({ queryKey: ['subscription-windows'], queryFn: () => api.get<{ data: SubWindow[] }>('/pricing/subscription-windows') });
 
@@ -107,11 +107,11 @@ export function Subscriptions() {
       }),
     onSuccess: () => {
       invalidate();
-      setEndingNowId(null);
+      setConfirmEnd(null);
       toast('Subscription ended', { kind: 'success', message: 'Calls now priced normally' });
     },
     onError: () => {
-      setEndingNowId(null);
+      setConfirmEnd(null);
       toast('Could not end subscription', { kind: 'error' });
     },
   });
@@ -140,7 +140,7 @@ export function Subscriptions() {
       render: (w) => (
         <div className="row" style={{ gap: 6, justifyContent: 'flex-end' }}>
           {isActive(w) && (
-            <Btn size="sm" variant="ghost" onClick={() => { setEndingNowId(w.id); endNow.mutate(w); }} disabled={endingNowId === w.id} ariaLabel={`End ${w.label} now`}>
+            <Btn size="sm" variant="ghost" onClick={() => setConfirmEnd(w)} ariaLabel={`End ${w.label} now`}>
               End now
             </Btn>
           )}
@@ -199,6 +199,15 @@ export function Subscriptions() {
           </label>
         </div>
       </Drawer>
+
+      <ConfirmModal
+        open={confirmEnd !== null}
+        title="End subscription now"
+        message="End this coverage window now? Calls to the provider will be priced normally (real cost) from this moment."
+        confirmLabel="End now"
+        onConfirm={() => confirmEnd !== null && endNow.mutate(confirmEnd)}
+        onCancel={() => setConfirmEnd(null)}
+      />
 
       <ConfirmModal
         open={endingId !== null}

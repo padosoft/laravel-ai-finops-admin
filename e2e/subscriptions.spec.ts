@@ -69,6 +69,7 @@ test.describe('Subscriptions screen (canoni / €0 coverage)', () => {
     await page.goto('/subscriptions');
 
     await page.getByRole('button', { name: 'End claude-max now' }).click();
+    await page.getByRole('button', { name: 'End now', exact: true }).click();
 
     await expect
       .poll(() => {
