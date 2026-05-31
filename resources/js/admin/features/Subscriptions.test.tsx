@@ -60,6 +60,11 @@ describe('Subscriptions', () => {
       expect(put).toBeTruthy();
       const body = JSON.parse((put![1] as RequestInit).body as string);
       expect(typeof body.ends_at).toBe('string');
+      // Ensure all existing fields are preserved (full-replace PUT must not drop them)
+      expect(body.enabled).toBe(activeWindow.enabled);
+      expect(body.starts_at).toBe(activeWindow.starts_at);
+      expect(body.provider).toBe(activeWindow.provider);
+      expect(body.label).toBe(activeWindow.label);
     });
   });
 

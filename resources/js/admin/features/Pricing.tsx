@@ -53,10 +53,11 @@ export function Pricing() {
 
   const models = useQuery({
     queryKey: ['pricing', 'models', search, sourceFilter],
-    queryFn: () =>
-      api.get<{ data: ModelRow[]; count: number }>(
-        `/pricing/models?search=${encodeURIComponent(search)}&source=${encodeURIComponent(sourceFilter)}&limit=100`,
-      ),
+    queryFn: () => {
+      const params = new URLSearchParams({ search, limit: '100' });
+      if (sourceFilter) params.set('source', sourceFilter);
+      return api.get<{ data: ModelRow[]; count: number }>(`/pricing/models?${params}`);
+    },
     placeholderData: keepPreviousData,
   });
   const overrides = useQuery({ queryKey: ['pricing', 'overrides'], queryFn: () => api.get<{ data: Override[] }>('/pricing/overrides') });
@@ -155,7 +156,7 @@ export function Pricing() {
           {models.isLoading && !models.data ? (
             <div style={{ padding: 14, color: 'var(--fg-2)' }}>Loading…</div>
           ) : (
-            <DataTable columns={modelCols} rows={models.data?.data ?? []} rowKey={(m) => `${m.model}:${m.provider ?? 'any'}`} empty="No models (sync pricing first)." />
+            <DataTable columns={modelCols} rows={models.data?.data ?? []} rowKey={(m) => `${m.model}:${m.provider ?? 'any'}:${m.source ?? ''}`} empty="No models (sync pricing first)." />
           )}
         </CardBody>
       </Card>

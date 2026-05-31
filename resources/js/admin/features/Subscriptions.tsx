@@ -7,7 +7,7 @@ import { DataTable, type Column } from '../components/DataTable';
 import { useToast } from '../components/Toast';
 import { Icon } from '../lib/icons';
 
-type Window = {
+type SubWindow = {
   id: number;
   provider: string;
   label: string;
@@ -21,7 +21,7 @@ type Window = {
 
 const emptyForm = { provider: '', label: '', starts_at: '', ends_at: '', model: '', tenant_id: '', note: '' };
 
-function isActive(w: Window): boolean {
+function isActive(w: SubWindow): boolean {
   if (!w.enabled) return false;
   const now = Date.now();
   if (w.starts_at && new Date(w.starts_at).getTime() > now) return false;
@@ -35,8 +35,9 @@ export function Subscriptions() {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [endingId, setEndingId] = useState<number | null>(null);
+  const [endingNowId, setEndingNowId] = useState<number | null>(null);
 
-  const windows = useQuery({ queryKey: ['subscription-windows'], queryFn: () => api.get<{ data: Window[] }>('/pricing/subscription-windows') });
+  const windows = useQuery({ queryKey: ['subscription-windows'], queryFn: () => api.get<{ data: SubWindow[] }>('/pricing/subscription-windows') });
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ['subscription-windows'] });
@@ -64,17 +65,26 @@ export function Subscriptions() {
   });
 
   const endNow = useMutation({
-    mutationFn: (w: Window) =>
+    mutationFn: (w: SubWindow) =>
       api.put(`/pricing/subscription-windows/${w.id}`, {
         provider: w.provider,
         label: w.label,
+        starts_at: w.starts_at,
         ends_at: new Date().toISOString(),
+        enabled: w.enabled,
+        model: w.model,
+        tenant_id: w.tenant_id,
+        note: w.note,
       }),
     onSuccess: () => {
       invalidate();
+      setEndingNowId(null);
       toast('Subscription ended', { kind: 'success', message: 'Calls now priced normally' });
     },
-    onError: () => toast('Could not end subscription', { kind: 'error' }),
+    onError: () => {
+      setEndingNowId(null);
+      toast('Could not end subscription', { kind: 'error' });
+    },
   });
 
   const remove = useMutation({
@@ -87,7 +97,7 @@ export function Subscriptions() {
     onError: () => toast('Could not delete', { kind: 'error' }),
   });
 
-  const cols: Column<Window>[] = [
+  const cols: Column<SubWindow>[] = [
     { key: 'provider', header: 'Provider', mono: true },
     { key: 'label', header: 'Plan' },
     { key: 'state', header: 'State', render: (w) => (isActive(w) ? <Badge tone="green">covered · €0</Badge> : <Badge tone="muted">inactive</Badge>) },
@@ -101,7 +111,7 @@ export function Subscriptions() {
       render: (w) => (
         <div className="row" style={{ gap: 6, justifyContent: 'flex-end' }}>
           {isActive(w) && (
-            <Btn size="sm" variant="ghost" onClick={() => endNow.mutate(w)} disabled={endNow.isPending} ariaLabel={`End ${w.label} now`}>
+            <Btn size="sm" variant="ghost" onClick={() => { setEndingNowId(w.id); endNow.mutate(w); }} disabled={endingNowId === w.id} ariaLabel={`End ${w.label} now`}>
               End now
             </Btn>
           )}
