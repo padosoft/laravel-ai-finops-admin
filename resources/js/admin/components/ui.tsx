@@ -71,6 +71,7 @@ export function Btn({
   onClick,
   type = 'button',
   disabled,
+  ariaLabel,
 }: {
   children: ReactNode;
   variant?: 'primary' | 'ghost';
@@ -78,10 +79,11 @@ export function Btn({
   onClick?: () => void;
   type?: 'button' | 'submit';
   disabled?: boolean;
+  ariaLabel?: string;
 }) {
   const cls = ['btn', variant, size].filter(Boolean).join(' ');
   return (
-    <button className={cls} onClick={onClick} type={type} disabled={disabled}>
+    <button className={cls} onClick={onClick} type={type} disabled={disabled} aria-label={ariaLabel}>
       {children}
     </button>
   );

@@ -15,6 +15,7 @@ export const NAV: NavSection[] = [
       { id: 'usage', to: '/usage', icon: 'list', label: 'Usage Explorer' },
       { id: 'trace', to: '/trace', icon: 'flame', label: 'Call / Trace' },
       { id: 'pricing', to: '/pricing', icon: 'tag', label: 'Pricing' },
+      { id: 'subscriptions', to: '/subscriptions', icon: 'calendar', label: 'Subscriptions' },
     ],
   },
   {

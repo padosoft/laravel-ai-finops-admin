@@ -23,7 +23,7 @@ export function renderWithProviders(ui: ReactElement, { route = '/' }: { route?:
  */
 export function mockApi(routes: Record<string, unknown>) {
   const keys = Object.keys(routes).sort((a, b) => b.length - a.length);
-  const spy = vi.fn(async (input: RequestInfo | URL) => {
+  const spy = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString();
     const match = keys.find((path) => url.includes(path));
     const body = match ? routes[match] : null;

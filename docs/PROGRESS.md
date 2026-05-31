@@ -2,6 +2,27 @@
 
 Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
 
+## 2026-06-01 — Multi-source pricing UI (mirrors backend M8) — IMPLEMENTED, PR pending
+
+- Handoff spec: `docs/superpowers/specs/2026-05-31-multi-source-pricing-admin-design.md`.
+- **Pricing screen**: model rows now show a **source** badge (litellm/openrouter/manual) + a `?source=`
+  filter; per-source sync status line + `has_openrouter_key` indicator; "Add price" drawer gains
+  **unit (per_token/per_million)**, **currency (USD/EUR)**, effective_from and note (regolo support).
+- **New Subscriptions screen** (`/subscriptions`, nav under Consumption): canoni CRUD over
+  `pricing/subscription-windows` — active windows flagged `covered · €0`, "End now" (PUT ends_at),
+  delete via ConfirmModal.
+- `Btn` gained an optional `ariaLabel` (accessibility + testability).
+- **Subscriptions** now full CRUD: added **Edit** (PUT, prefilled drawer + Enabled toggle) alongside
+  create / End-now / delete (addressed Copilot review).
+- **Playwright harness built** (the repo had none): `index.html` + `vite.e2e.config.ts` (base '/') +
+  `playwright.config.ts` (desktop 1440×900 + tablet 1024×768), API stubbed via `page.route`. Specs
+  `e2e/pricing.spec.ts` + `e2e/subscriptions.spec.ts` cover all new interactions → **16 e2e green**
+  (8 × 2 projects). CI gains an `e2e` job.
+- Also: addOverride invalidates the whole `['pricing']` key so new manual prices surface in the catalog.
+- Tests: **Vitest 41** + **PHPUnit 8** + **Playwright 16** + build, all green.
+- **NEXT:** local Copilot `/review` → push → PR `feat/admin-multisource-pricing`→main + @copilot → CI+Copilot
+  green → merge → tag/release v1.1.0.
+
 ## 2026-05-27 — Admin complete
 
 ### T2–T8 — DONE
