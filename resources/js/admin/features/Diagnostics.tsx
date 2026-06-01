@@ -10,24 +10,28 @@ type Health = { package: string; enabled: boolean; metering: boolean; enforcemen
 type Estimate = {
   cost: { total: number; input: number; output: number; currency: string };
   price_source: string | null;
+  method?: string;
+  tokens_estimated?: boolean;
+  tokens?: { input: number; output: number };
   decision: { action: string; reason: string; budget_id: number | null; suggested_model: string | null };
 };
 
 export function Diagnostics() {
   const toast = useToast();
-  const [form, setForm] = useState({ provider: 'openai', model: '', tokens_input: '1000', tokens_output: '500' });
+  const [form, setForm] = useState({ provider: 'openai', model: '', tokens_input: '1000', tokens_output: '500', prompt: '' });
   const [result, setResult] = useState<Estimate | null>(null);
 
   const health = useQuery({ queryKey: ['health'], queryFn: () => api.get<Health>('/health') });
 
   const estimate = useMutation({
-    mutationFn: () =>
-      api.post<Estimate>('/diagnostics/estimate', {
-        provider: form.provider,
-        model: form.model,
-        tokens_input: Number(form.tokens_input),
-        tokens_output: Number(form.tokens_output),
-      }),
+    mutationFn: () => {
+      // A prompt wins over explicit token counts → server estimates tokens (case c).
+      const body = form.prompt.trim() !== ''
+        ? { provider: form.provider, model: form.model, prompt: form.prompt }
+        : { provider: form.provider, model: form.model, tokens_input: Number(form.tokens_input), tokens_output: Number(form.tokens_output) };
+
+      return api.post<Estimate>('/diagnostics/estimate', body);
+    },
     onSuccess: (r) => setResult(r),
     onError: () => toast('Estimate failed', { kind: 'error' }),
   });
@@ -64,10 +68,18 @@ export function Diagnostics() {
               <Btn variant="primary" onClick={() => estimate.mutate()} disabled={!form.model || estimate.isPending}>Estimate</Btn>
             </div>
 
+            <div style={{ marginTop: 10 }}>
+              <Field label="…or estimate from prompt text (tokens are estimated)">
+                <textarea className="input" rows={3} value={form.prompt} onChange={(e) => setForm({ ...form, prompt: e.target.value })} aria-label="Prompt text" placeholder="Paste a prompt to estimate its token cost…" />
+              </Field>
+            </div>
+
             {result && (
               <div style={{ marginTop: 14 }} data-testid="estimate-result">
                 <div className="row" style={{ gap: 16 }}>
                   <div>Cost: <strong className="mono">{fmtUsd(result.cost.total, 6)} {result.cost.currency}</strong></div>
+                  {result.method && <div>Method: <Badge tone={result.tokens_estimated ? 'yellow' : 'blue'}>{result.method}</Badge></div>}
+                  {result.tokens && <div>Tokens: <span className="mono">{result.tokens.input} / {result.tokens.output}</span></div>}
                   <div>Source: <span className="mono">{result.price_source ?? 'unknown'}</span></div>
                   <div>Decision: <Badge tone={result.decision.action === 'allow' ? 'green' : result.decision.action === 'block' ? 'red' : 'yellow'}>{result.decision.action}</Badge></div>
                 </div>

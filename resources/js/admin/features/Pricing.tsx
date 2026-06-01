@@ -32,10 +32,14 @@ const emptyForm = {
   input_cost_per_token: '',
   output_cost_per_token: '',
   unit: 'per_token',
+  unit_rate: '',
   currency: 'USD',
   effective_from: '',
   note: '',
 };
+
+// Non-token (media) units price by a single unit_rate (e.g. fal.ai).
+const MEDIA_UNITS = ['per_second', 'per_image', 'per_megapixel', 'per_request'];
 
 const SOURCE_TONE: Record<string, 'green' | 'red' | 'yellow' | 'blue' | 'muted'> = {
   litellm: 'blue',
@@ -77,9 +81,10 @@ export function Pricing() {
       api.post('/pricing/overrides', {
         model: form.model,
         provider: form.provider || null,
-        input_cost_per_token: Number(form.input_cost_per_token),
-        output_cost_per_token: Number(form.output_cost_per_token),
+        input_cost_per_token: Number(form.input_cost_per_token || 0),
+        output_cost_per_token: Number(form.output_cost_per_token || 0),
         unit: form.unit,
+        unit_rate: MEDIA_UNITS.includes(form.unit) && form.unit_rate !== '' ? Number(form.unit_rate) : null,
         currency: form.currency,
         effective_from: form.effective_from || null,
         note: form.note || null,
@@ -179,7 +184,7 @@ export function Pricing() {
         footer={
           <>
             <Btn variant="ghost" onClick={() => setCreating(false)}>Cancel</Btn>
-            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || !form.input_cost_per_token || !form.output_cost_per_token || addOverride.isPending}>Save</Btn>
+            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || addOverride.isPending || (MEDIA_UNITS.includes(form.unit) ? form.unit_rate === '' : (!form.input_cost_per_token || !form.output_cost_per_token))}>Save</Btn>
           </>
         }
       >
@@ -192,8 +197,17 @@ export function Pricing() {
             <select className="input" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} aria-label="Unit">
               <option value="per_token">per token</option>
               <option value="per_million">per 1M tokens</option>
+              <option value="per_second">per second (media)</option>
+              <option value="per_image">per image (media)</option>
+              <option value="per_megapixel">per megapixel (media)</option>
+              <option value="per_request">per request (media)</option>
             </select>
           </Field>
+          {MEDIA_UNITS.includes(form.unit) && (
+            <Field label="Unit rate (per unit, e.g. fal.ai $/second)">
+              <input className="input" type="number" step="any" value={form.unit_rate} onChange={(e) => setForm({ ...form, unit_rate: e.target.value })} aria-label="Unit rate" />
+            </Field>
+          )}
           <Field label="Currency">
             <select className="input" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} aria-label="Currency">
               <option value="USD">USD</option>

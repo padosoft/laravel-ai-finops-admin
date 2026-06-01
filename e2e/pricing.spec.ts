@@ -85,4 +85,25 @@ test.describe('Pricing screen (multi-source)', () => {
       })
       .toMatchObject({ unit: 'per_million', currency: 'EUR', input_cost_per_token: 0.6 });
   });
+
+  test('adds a fal media override with a unit rate', async ({ page }) => {
+    const captured: Captured[] = [];
+    await stubApi(page, captured);
+    await page.goto('/pricing');
+    await expect(page.getByText('gpt-5.1')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Add price' }).click();
+    await page.getByLabel('Model', { exact: true }).fill('flux-video');
+    await page.getByLabel('Provider').fill('fal');
+    await page.getByLabel('Unit').selectOption('per_second');
+    await page.getByLabel('Unit rate').fill('0.0005');
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect
+      .poll(() => {
+        const post = captured.find((c) => c.url.includes('/pricing/overrides') && c.method === 'POST');
+        return post ? (post.body as Record<string, unknown>) : null;
+      })
+      .toMatchObject({ unit: 'per_second', unit_rate: 0.0005 });
+  });
 });
