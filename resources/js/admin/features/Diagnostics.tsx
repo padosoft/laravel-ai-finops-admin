@@ -16,12 +16,22 @@ type Estimate = {
   decision: { action: string; reason: string; budget_id: number | null; suggested_model: string | null };
 };
 
+const METHOD_TONE: Record<string, 'green' | 'blue' | 'yellow' | 'muted'> = {
+  actual: 'green',
+  computed: 'blue',
+  estimated: 'yellow',
+  covered: 'muted',
+};
+
 export function Diagnostics() {
   const toast = useToast();
   const [form, setForm] = useState({ provider: 'openai', model: '', tokens_input: '1000', tokens_output: '500', prompt: '' });
   const [result, setResult] = useState<Estimate | null>(null);
 
   const health = useQuery({ queryKey: ['health'], queryFn: () => api.get<Health>('/health') });
+
+  // A non-empty prompt switches to estimate-from-text mode; token inputs are disabled.
+  const promptMode = form.prompt.trim() !== '';
 
   const estimate = useMutation({
     mutationFn: () => {
@@ -63,8 +73,8 @@ export function Diagnostics() {
             <div className="row" style={{ gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
               <Field label="Provider"><input className="input" value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} aria-label="Provider" /></Field>
               <Field label="Model"><input className="input" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} aria-label="Model" /></Field>
-              <Field label="Tokens in"><input className="input" type="number" value={form.tokens_input} onChange={(e) => setForm({ ...form, tokens_input: e.target.value })} aria-label="Tokens in" style={{ width: 110 }} /></Field>
-              <Field label="Tokens out"><input className="input" type="number" value={form.tokens_output} onChange={(e) => setForm({ ...form, tokens_output: e.target.value })} aria-label="Tokens out" style={{ width: 110 }} /></Field>
+              <Field label="Tokens in"><input className="input" type="number" value={form.tokens_input} onChange={(e) => setForm({ ...form, tokens_input: e.target.value })} aria-label="Tokens in" style={{ width: 110 }} disabled={promptMode} /></Field>
+              <Field label="Tokens out"><input className="input" type="number" value={form.tokens_output} onChange={(e) => setForm({ ...form, tokens_output: e.target.value })} aria-label="Tokens out" style={{ width: 110 }} disabled={promptMode} /></Field>
               <Btn variant="primary" onClick={() => estimate.mutate()} disabled={!form.model || estimate.isPending}>Estimate</Btn>
             </div>
 
@@ -78,7 +88,7 @@ export function Diagnostics() {
               <div style={{ marginTop: 14 }} data-testid="estimate-result">
                 <div className="row" style={{ gap: 16 }}>
                   <div>Cost: <strong className="mono">{fmtUsd(result.cost.total, 6)} {result.cost.currency}</strong></div>
-                  {result.method && <div>Method: <Badge tone={result.tokens_estimated ? 'yellow' : 'blue'}>{result.method}</Badge></div>}
+                  {result.method && <div>Method: <Badge tone={METHOD_TONE[result.method] ?? 'muted'}>{result.method}</Badge></div>}
                   {result.tokens && <div>Tokens: <span className="mono">{result.tokens.input} / {result.tokens.output}</span></div>}
                   <div>Source: <span className="mono">{result.price_source ?? 'unknown'}</span></div>
                   <div>Decision: <Badge tone={result.decision.action === 'allow' ? 'green' : result.decision.action === 'block' ? 'red' : 'yellow'}>{result.decision.action}</Badge></div>

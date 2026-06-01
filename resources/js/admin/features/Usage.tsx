@@ -19,6 +19,7 @@ type UsageRow = {
   cost_method?: string | null;
   tokens_estimated?: boolean;
   billed_cost?: string | number | null;
+  billed_currency?: string | null;
 };
 
 const METHOD_TONE: Record<string, 'green' | 'blue' | 'yellow' | 'muted'> = {
@@ -112,7 +113,18 @@ export function Usage() {
             <Row label="Tokens in / out" value={<span className="mono">{fmtCompact(selected.tokens_input)} / {fmtCompact(selected.tokens_output)}{selected.tokens_estimated ? ' (estimated)' : ''}</span>} />
             <Row label="Cost method" value={<MethodBadge method={selected.cost_method} />} />
             <Row label="Cost" value={fmtUsd(Number(selected.cost_total), 6)} />
-            {selected.billed_cost != null && <Row label="Billed (provider)" value={<span className="mono">{fmtUsd(Number(selected.billed_cost), 6)}</span>} />}
+            {selected.billed_cost != null && (
+              <Row
+                label="Billed (provider)"
+                value={
+                  <span className="mono">
+                    {selected.billed_currency && selected.billed_currency !== 'USD'
+                      ? `${Number(selected.billed_cost).toFixed(6)} ${selected.billed_currency}`
+                      : fmtUsd(Number(selected.billed_cost), 6)}
+                  </span>
+                }
+              />
+            )}
           </div>
         )}
       </Drawer>

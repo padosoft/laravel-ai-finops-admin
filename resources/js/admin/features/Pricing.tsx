@@ -20,6 +20,7 @@ type Override = {
   provider: string | null;
   input_cost_per_token: number;
   output_cost_per_token: number;
+  unit_rate: number | null;
   currency: string;
   unit?: string;
 };
@@ -113,8 +114,9 @@ export function Pricing() {
   const overrideCols: Column<Override>[] = [
     { key: 'model', header: 'Model', mono: true },
     { key: 'provider', header: 'Provider', render: (o) => o.provider ?? 'any' },
-    { key: 'input_cost_per_token', header: 'Input', align: 'right', render: (o) => <span className="mono">{o.input_cost_per_token}</span> },
-    { key: 'output_cost_per_token', header: 'Output', align: 'right', render: (o) => <span className="mono">{o.output_cost_per_token}</span> },
+    { key: 'input_cost_per_token', header: 'Input', align: 'right', render: (o) => <span className="mono">{MEDIA_UNITS.includes(o.unit ?? '') ? '—' : o.input_cost_per_token}</span> },
+    { key: 'output_cost_per_token', header: 'Output', align: 'right', render: (o) => <span className="mono">{MEDIA_UNITS.includes(o.unit ?? '') ? '—' : o.output_cost_per_token}</span> },
+    { key: 'unit_rate', header: 'Rate', align: 'right', render: (o) => <span className="mono">{o.unit_rate != null ? o.unit_rate : '—'}</span> },
     { key: 'unit', header: 'Unit', render: (o) => <span className="mono">{o.unit ?? 'per_token'}</span> },
     { key: 'currency', header: 'Cur', render: (o) => o.currency },
   ];
