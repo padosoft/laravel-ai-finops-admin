@@ -20,6 +20,7 @@ type Override = {
   provider: string | null;
   input_cost_per_token: number;
   output_cost_per_token: number;
+  unit_rate: number | null;
   currency: string;
   unit?: string;
 };
@@ -32,10 +33,14 @@ const emptyForm = {
   input_cost_per_token: '',
   output_cost_per_token: '',
   unit: 'per_token',
+  unit_rate: '',
   currency: 'USD',
   effective_from: '',
   note: '',
 };
+
+// Non-token (media) units price by a single unit_rate (e.g. fal.ai).
+const MEDIA_UNITS = ['per_second', 'per_image', 'per_megapixel', 'per_request'];
 
 const SOURCE_TONE: Record<string, 'green' | 'red' | 'yellow' | 'blue' | 'muted'> = {
   litellm: 'blue',
@@ -77,9 +82,11 @@ export function Pricing() {
       api.post('/pricing/overrides', {
         model: form.model,
         provider: form.provider || null,
-        input_cost_per_token: Number(form.input_cost_per_token),
-        output_cost_per_token: Number(form.output_cost_per_token),
+        // Media (unit-priced) overrides carry no per-token cost — force 0.
+        input_cost_per_token: MEDIA_UNITS.includes(form.unit) ? 0 : Number(form.input_cost_per_token || 0),
+        output_cost_per_token: MEDIA_UNITS.includes(form.unit) ? 0 : Number(form.output_cost_per_token || 0),
         unit: form.unit,
+        unit_rate: MEDIA_UNITS.includes(form.unit) && form.unit_rate !== '' ? Number(form.unit_rate) : null,
         currency: form.currency,
         effective_from: form.effective_from || null,
         note: form.note || null,
@@ -108,8 +115,9 @@ export function Pricing() {
   const overrideCols: Column<Override>[] = [
     { key: 'model', header: 'Model', mono: true },
     { key: 'provider', header: 'Provider', render: (o) => o.provider ?? 'any' },
-    { key: 'input_cost_per_token', header: 'Input', align: 'right', render: (o) => <span className="mono">{o.input_cost_per_token}</span> },
-    { key: 'output_cost_per_token', header: 'Output', align: 'right', render: (o) => <span className="mono">{o.output_cost_per_token}</span> },
+    { key: 'input_cost_per_token', header: 'Input', align: 'right', render: (o) => <span className="mono">{MEDIA_UNITS.includes(o.unit ?? '') ? '—' : o.input_cost_per_token}</span> },
+    { key: 'output_cost_per_token', header: 'Output', align: 'right', render: (o) => <span className="mono">{MEDIA_UNITS.includes(o.unit ?? '') ? '—' : o.output_cost_per_token}</span> },
+    { key: 'unit_rate', header: 'Rate', align: 'right', render: (o) => <span className="mono">{o.unit_rate != null ? o.unit_rate : '—'}</span> },
     { key: 'unit', header: 'Unit', render: (o) => <span className="mono">{o.unit ?? 'per_token'}</span> },
     { key: 'currency', header: 'Cur', render: (o) => o.currency },
   ];
@@ -179,21 +187,30 @@ export function Pricing() {
         footer={
           <>
             <Btn variant="ghost" onClick={() => setCreating(false)}>Cancel</Btn>
-            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || !form.input_cost_per_token || !form.output_cost_per_token || addOverride.isPending}>Save</Btn>
+            <Btn variant="primary" onClick={() => addOverride.mutate()} disabled={!form.model || addOverride.isPending || (MEDIA_UNITS.includes(form.unit) ? form.unit_rate === '' : (!form.input_cost_per_token || !form.output_cost_per_token))}>Save</Btn>
           </>
         }
       >
         <div className="col" style={{ gap: 10 }}>
           <Field label="Model"><input className="input" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} aria-label="Model" /></Field>
           <Field label="Provider (optional)"><input className="input" value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} aria-label="Provider" /></Field>
-          <Field label="Input cost"><input className="input" type="number" step="any" value={form.input_cost_per_token} onChange={(e) => setForm({ ...form, input_cost_per_token: e.target.value })} aria-label="Input cost" /></Field>
-          <Field label="Output cost"><input className="input" type="number" step="any" value={form.output_cost_per_token} onChange={(e) => setForm({ ...form, output_cost_per_token: e.target.value })} aria-label="Output cost" /></Field>
+          <Field label="Input cost"><input className="input" type="number" step="any" value={form.input_cost_per_token} onChange={(e) => setForm({ ...form, input_cost_per_token: e.target.value })} aria-label="Input cost" disabled={MEDIA_UNITS.includes(form.unit)} /></Field>
+          <Field label="Output cost"><input className="input" type="number" step="any" value={form.output_cost_per_token} onChange={(e) => setForm({ ...form, output_cost_per_token: e.target.value })} aria-label="Output cost" disabled={MEDIA_UNITS.includes(form.unit)} /></Field>
           <Field label="Unit">
             <select className="input" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} aria-label="Unit">
               <option value="per_token">per token</option>
               <option value="per_million">per 1M tokens</option>
+              <option value="per_second">per second (media)</option>
+              <option value="per_image">per image (media)</option>
+              <option value="per_megapixel">per megapixel (media)</option>
+              <option value="per_request">per request (media)</option>
             </select>
           </Field>
+          {MEDIA_UNITS.includes(form.unit) && (
+            <Field label="Unit rate (per unit, e.g. fal.ai $/second)">
+              <input className="input" type="number" step="any" value={form.unit_rate} onChange={(e) => setForm({ ...form, unit_rate: e.target.value })} aria-label="Unit rate" />
+            </Field>
+          )}
           <Field label="Currency">
             <select className="input" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} aria-label="Currency">
               <option value="USD">USD</option>

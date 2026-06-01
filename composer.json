@@ -34,7 +34,7 @@
         "illuminate/routing": "^12.0 || ^13.0",
         "illuminate/support": "^12.0 || ^13.0",
         "illuminate/view": "^12.0 || ^13.0",
-        "padosoft/laravel-ai-finops": "^1.0"
+        "padosoft/laravel-ai-finops": "^1.2.1"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0 || ^11.0",

@@ -48,6 +48,32 @@ describe('Pricing', () => {
     });
   });
 
+  it('adds a fal media override with a unit rate', async () => {
+    const spy = mockApi(baseRoutes());
+    renderWithProviders(<Pricing />);
+
+    await screen.findAllByText('gpt-5.1');
+    fireEvent.click(screen.getByText('Add price'));
+
+    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'flux-video' } });
+    fireEvent.change(screen.getByLabelText('Provider'), { target: { value: 'fal' } });
+    fireEvent.change(screen.getByLabelText('Unit'), { target: { value: 'per_second' } });
+    fireEvent.change(screen.getByLabelText('Unit rate'), { target: { value: '0.0005' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => {
+      const post = spy.mock.calls.find(
+        ([input, init]) => String(input).includes('/pricing/overrides') && (init as RequestInit)?.method === 'POST',
+      );
+      expect(post).toBeTruthy();
+      const body = JSON.parse((post![1] as RequestInit).body as string);
+      expect(body.unit).toBe('per_second');
+      expect(body.unit_rate).toBe(0.0005);
+      expect(body.input_cost_per_token).toBe(0); // media unit → token costs forced to 0
+      expect(body.output_cost_per_token).toBe(0);
+    });
+  });
+
   it('adds a manual override in EUR / per-million', async () => {
     const spy = mockApi(baseRoutes());
     renderWithProviders(<Pricing />);

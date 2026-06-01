@@ -3,7 +3,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../lib/apiClient';
 import { fmtUsd, fmtCompact } from '../lib/format';
 import { PageHead } from '../layout/AppShell';
-import { Card, CardBody, StatusBadge, Money, Drawer, Btn } from '../components/ui';
+import { Card, CardBody, StatusBadge, Money, Drawer, Btn, Badge } from '../components/ui';
 import { DataTable, type Column } from '../components/DataTable';
 
 type UsageRow = {
@@ -16,7 +16,23 @@ type UsageRow = {
   tokens_output: number;
   cost_total: string | number;
   trace_id: string;
+  cost_method?: string | null;
+  tokens_estimated?: boolean;
+  billed_cost?: string | number | null;
+  billed_currency?: string | null;
 };
+
+const METHOD_TONE: Record<string, 'green' | 'blue' | 'yellow' | 'muted'> = {
+  actual: 'green',
+  computed: 'blue',
+  estimated: 'yellow',
+  covered: 'muted',
+};
+
+function MethodBadge({ method }: { method?: string | null }) {
+  if (!method) return <span>—</span>;
+  return <Badge tone={METHOD_TONE[method] ?? 'muted'}>{method}</Badge>;
+}
 type Paginated = { data: UsageRow[]; current_page: number; last_page: number; total: number };
 
 export function Usage() {
@@ -38,7 +54,8 @@ export function Usage() {
     { key: 'provider', header: 'Provider' },
     { key: 'model', header: 'Model', mono: true },
     { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
-    { key: 'tokens', header: 'Tokens', align: 'right', render: (r) => <span className="mono">{fmtCompact(r.tokens_input + r.tokens_output)}</span> },
+    { key: 'tokens', header: 'Tokens', align: 'right', render: (r) => <span className="mono">{fmtCompact(r.tokens_input + r.tokens_output)}{r.tokens_estimated ? <span title="estimated" style={{ color: 'var(--yellow)' }}> ≈</span> : null}</span> },
+    { key: 'cost_method', header: 'Method', render: (r) => <MethodBadge method={r.cost_method} /> },
     { key: 'cost_total', header: 'Cost', align: 'right', render: (r) => <Money value={Number(r.cost_total)} decimals={6} /> },
   ];
 
@@ -93,8 +110,21 @@ export function Usage() {
           <div className="col" style={{ gap: 10 }}>
             <Row label="Trace" value={<span className="mono">{selected.trace_id}</span>} />
             <Row label="Status" value={<StatusBadge status={selected.status} />} />
-            <Row label="Tokens in / out" value={<span className="mono">{fmtCompact(selected.tokens_input)} / {fmtCompact(selected.tokens_output)}</span>} />
+            <Row label="Tokens in / out" value={<span className="mono">{fmtCompact(selected.tokens_input)} / {fmtCompact(selected.tokens_output)}{selected.tokens_estimated ? ' (estimated)' : ''}</span>} />
+            <Row label="Cost method" value={<MethodBadge method={selected.cost_method} />} />
             <Row label="Cost" value={fmtUsd(Number(selected.cost_total), 6)} />
+            {selected.billed_cost != null && (
+              <Row
+                label="Billed (provider)"
+                value={
+                  <span className="mono">
+                    {selected.billed_currency && selected.billed_currency !== 'USD'
+                      ? `${Number(selected.billed_cost).toFixed(6)} ${selected.billed_currency}`
+                      : fmtUsd(Number(selected.billed_cost), 6)}
+                  </span>
+                }
+              />
+            )}
           </div>
         )}
       </Drawer>

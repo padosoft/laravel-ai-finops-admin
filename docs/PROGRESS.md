@@ -2,6 +2,17 @@
 
 Dated work log (YYYY-MM-DD), newest first. Resume point for any session.
 
+## 2026-06-01 — Cost cascade UI (mirrors core M9 / v1.2.x) — IMPLEMENTED, PR pending
+
+- Spec: `docs/superpowers/specs/2026-06-01-cost-cascade-admin-design.md`.
+- **Usage Explorer**: cost-method badge (actual/computed/estimated/covered) + `≈` estimated-tokens
+  marker + drawer cost-method/billed-provider. **Diagnostics**: estimate-from-prompt textarea (case c).
+  **Pricing**: manual mask gains media units (per_second/image/megapixel/request) + unit_rate for fal.
+- Required a tiny core patch (v1.2.1) so `pricing/overrides` accepts media units + `unit_rate`.
+- Tests: **Vitest 45** + **PHPUnit 8** + **Playwright 22** + build green.
+- **NEXT:** local Copilot `/review` → PR `feat/admin-cost-cascade`→main + @copilot → CI green → merge →
+  release v1.2.0.
+
 ## 2026-06-01 — Multi-source pricing UI (mirrors backend M8) — ✅ MERGED (PR #14) + RELEASED v1.1.0
 
 - Handoff spec: `docs/superpowers/specs/2026-05-31-multi-source-pricing-admin-design.md`.
