@@ -24,8 +24,12 @@ A single React SPA mounted at `/admin/ai-finops` that drives **every** `laravel-
 **no mocks**, all live data over session + CSRF:
 
 - **Dashboard** — KPIs, spend trend, top-models donut, budget burn, anomalies.
-- **Usage Explorer** & **Call/Trace** — filterable ledger + per-step cost flame-graph.
-- **Pricing** — LiteLLM mirror + sync + local overrides.
+- **Usage Explorer** & **Call/Trace** — filterable ledger + per-step cost flame-graph, with a
+  **cost-method badge** (actual / computed / estimated / covered), an estimated-tokens marker, and the
+  provider-billed amount.
+- **Pricing** — multi-source (LiteLLM ⊕ OpenRouter ⊕ manual) + sync + overrides; manual mask supports
+  per-1M / EUR and **fal.ai media units** (per second/image/megapixel + unit rate).
+- **Diagnostics** — health + cost estimator, including **estimate-from-prompt** (server estimates tokens).
 - **Budgets · Policies · Approvals · Chargeback · Alerts** — full governance, CRUD + workflows.
 - **Forecast · Cost-aware Routing · What-if · Price Watcher · Credit Pools** — the intelligence layer.
 - **FinOps Copilot · CO₂/ESG · Settings · Diagnostics**.

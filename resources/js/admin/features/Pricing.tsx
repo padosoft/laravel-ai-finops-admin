@@ -82,8 +82,9 @@ export function Pricing() {
       api.post('/pricing/overrides', {
         model: form.model,
         provider: form.provider || null,
-        input_cost_per_token: Number(form.input_cost_per_token || 0),
-        output_cost_per_token: Number(form.output_cost_per_token || 0),
+        // Media (unit-priced) overrides carry no per-token cost — force 0.
+        input_cost_per_token: MEDIA_UNITS.includes(form.unit) ? 0 : Number(form.input_cost_per_token || 0),
+        output_cost_per_token: MEDIA_UNITS.includes(form.unit) ? 0 : Number(form.output_cost_per_token || 0),
         unit: form.unit,
         unit_rate: MEDIA_UNITS.includes(form.unit) && form.unit_rate !== '' ? Number(form.unit_rate) : null,
         currency: form.currency,
@@ -193,8 +194,8 @@ export function Pricing() {
         <div className="col" style={{ gap: 10 }}>
           <Field label="Model"><input className="input" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} aria-label="Model" /></Field>
           <Field label="Provider (optional)"><input className="input" value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} aria-label="Provider" /></Field>
-          <Field label="Input cost"><input className="input" type="number" step="any" value={form.input_cost_per_token} onChange={(e) => setForm({ ...form, input_cost_per_token: e.target.value })} aria-label="Input cost" /></Field>
-          <Field label="Output cost"><input className="input" type="number" step="any" value={form.output_cost_per_token} onChange={(e) => setForm({ ...form, output_cost_per_token: e.target.value })} aria-label="Output cost" /></Field>
+          <Field label="Input cost"><input className="input" type="number" step="any" value={form.input_cost_per_token} onChange={(e) => setForm({ ...form, input_cost_per_token: e.target.value })} aria-label="Input cost" disabled={MEDIA_UNITS.includes(form.unit)} /></Field>
+          <Field label="Output cost"><input className="input" type="number" step="any" value={form.output_cost_per_token} onChange={(e) => setForm({ ...form, output_cost_per_token: e.target.value })} aria-label="Output cost" disabled={MEDIA_UNITS.includes(form.unit)} /></Field>
           <Field label="Unit">
             <select className="input" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} aria-label="Unit">
               <option value="per_token">per token</option>

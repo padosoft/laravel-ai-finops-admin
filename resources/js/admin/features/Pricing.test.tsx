@@ -69,6 +69,8 @@ describe('Pricing', () => {
       const body = JSON.parse((post![1] as RequestInit).body as string);
       expect(body.unit).toBe('per_second');
       expect(body.unit_rate).toBe(0.0005);
+      expect(body.input_cost_per_token).toBe(0); // media unit → token costs forced to 0
+      expect(body.output_cost_per_token).toBe(0);
     });
   });
 

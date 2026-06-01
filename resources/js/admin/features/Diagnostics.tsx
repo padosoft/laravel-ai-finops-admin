@@ -37,7 +37,7 @@ export function Diagnostics() {
     mutationFn: () => {
       // A prompt wins over explicit token counts → server estimates tokens (case c).
       const body = form.prompt.trim() !== ''
-        ? { provider: form.provider, model: form.model, prompt: form.prompt }
+        ? { provider: form.provider, model: form.model, prompt: form.prompt.trim() }
         : { provider: form.provider, model: form.model, tokens_input: Number(form.tokens_input), tokens_output: Number(form.tokens_output) };
 
       return api.post<Estimate>('/diagnostics/estimate', body);
@@ -80,7 +80,7 @@ export function Diagnostics() {
 
             <div style={{ marginTop: 10 }}>
               <Field label="…or estimate from prompt text (tokens are estimated)">
-                <textarea className="input" rows={3} value={form.prompt} onChange={(e) => setForm({ ...form, prompt: e.target.value })} aria-label="Prompt text" placeholder="Paste a prompt to estimate its token cost…" />
+                <textarea className="textarea" rows={3} value={form.prompt} onChange={(e) => setForm({ ...form, prompt: e.target.value })} aria-label="Prompt text" placeholder="Paste a prompt to estimate its token cost…" />
               </Field>
             </div>
 
