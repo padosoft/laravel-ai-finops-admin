@@ -17,6 +17,9 @@ dependency here, then finish the screen.
   tablet) for any UI.
 - Local gates green: `composer validate`, `vendor/bin/phpunit`, `npm run build`, `npm run test`,
   `npm run e2e`; local Copilot `/review` clean; then push.
+- **README is a mandatory deliverable**: keep `README.md` precise/meticulous, every shipped UI/feature
+  reflected in EVERY relevant section. **Every analysis/plan ends with a dedicated standalone final
+  task: a full README audit & update** (its own task, last before tag/release).
 
 ## Branch & PR loop
 One branch per macro-task (T1…T8); subtask PRs into it; macro PR → `main`. PR reviewer = GitHub Copilot;
