@@ -16,6 +16,7 @@ type UsageRow = {
   tokens_output: number;
   cost_total: string | number;
   trace_id: string;
+  delegation_grant_id?: string | null;
   cost_method?: string | null;
   tokens_estimated?: boolean;
   billed_cost?: string | number | null;
@@ -36,7 +37,7 @@ function MethodBadge({ method }: { method?: string | null }) {
 type Paginated = { data: UsageRow[]; current_page: number; last_page: number; total: number };
 
 export function Usage() {
-  const [filters, setFilters] = useState({ provider: '', model: '', status: '' });
+  const [filters, setFilters] = useState({ provider: '', model: '', status: '', delegation_grant_id: '' });
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<UsageRow | null>(null);
 
@@ -56,6 +57,7 @@ export function Usage() {
     { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
     { key: 'tokens', header: 'Tokens', align: 'right', render: (r) => <span className="mono">{fmtCompact(r.tokens_input + r.tokens_output)}{r.tokens_estimated ? <span title="estimated" style={{ color: 'var(--yellow)' }}> ≈</span> : null}</span> },
     { key: 'cost_method', header: 'Method', render: (r) => <MethodBadge method={r.cost_method} /> },
+    { key: 'delegation_grant_id', header: 'Delegation', render: (r) => (r.delegation_grant_id ? <span className="mono" title={r.delegation_grant_id}>{r.delegation_grant_id.slice(0, 12)}…</span> : <span>—</span>) },
     { key: 'cost_total', header: 'Cost', align: 'right', render: (r) => <Money value={Number(r.cost_total)} decimals={6} /> },
   ];
 
@@ -66,11 +68,11 @@ export function Usage() {
       <Card>
         <CardBody>
           <div className="row" style={{ gap: 8, marginBottom: 12 }} data-testid="usage-filters">
-            {(['provider', 'model', 'status'] as const).map((f) => (
+            {(['provider', 'model', 'status', 'delegation_grant_id'] as const).map((f) => (
               <input
                 key={f}
                 className="input sm"
-                placeholder={f}
+                placeholder={f === 'delegation_grant_id' ? 'delegation grant (dgr_…)' : f}
                 value={filters[f]}
                 onChange={(e) => {
                   setPage(1);
@@ -111,6 +113,7 @@ export function Usage() {
             <Row label="Trace" value={<span className="mono">{selected.trace_id}</span>} />
             <Row label="Status" value={<StatusBadge status={selected.status} />} />
             <Row label="Tokens in / out" value={<span className="mono">{fmtCompact(selected.tokens_input)} / {fmtCompact(selected.tokens_output)}{selected.tokens_estimated ? ' (estimated)' : ''}</span>} />
+            {selected.delegation_grant_id && <Row label="Delegation grant" value={<span className="mono">{selected.delegation_grant_id}</span>} />}
             <Row label="Cost method" value={<MethodBadge method={selected.cost_method} />} />
             <Row label="Cost" value={fmtUsd(Number(selected.cost_total), 6)} />
             {selected.billed_cost != null && (
