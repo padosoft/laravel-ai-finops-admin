@@ -4,6 +4,7 @@ import { Dashboard } from './features/Dashboard';
 import { Diagnostics } from './features/Diagnostics';
 import { Usage } from './features/Usage';
 import { Trace } from './features/Trace';
+import { Runs } from './features/Runs';
 import { Pricing } from './features/Pricing';
 import { Subscriptions } from './features/Subscriptions';
 import { Budgets } from './features/Budgets';
@@ -29,6 +30,7 @@ export function App() {
         <Route path="diagnostics" element={<Diagnostics />} />
         <Route path="usage" element={<Usage />} />
         <Route path="trace" element={<Trace />} />
+        <Route path="runs" element={<Runs />} />
         <Route path="pricing" element={<Pricing />} />
         <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="budgets" element={<Budgets />} />

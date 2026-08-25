@@ -25,8 +25,14 @@ A single React SPA mounted at `/admin/ai-finops` that drives **every** `laravel-
 
 - **Dashboard** — KPIs, spend trend, top-models donut, budget burn, anomalies.
 - **Usage Explorer** & **Call/Trace** — filterable ledger + per-step cost flame-graph, with a
-  **cost-method badge** (actual / computed / estimated / covered), an estimated-tokens marker, and the
-  provider-billed amount.
+  **cost-method badge** (actual / computed / estimated / covered), an estimated-tokens marker, the
+  provider-billed amount, and a **delegation-grant filter/column** (core ≥ 1.6): paste a `dgr_…` id
+  to see everything an IAM-delegated AI agent spent on behalf of its user.
+- **Agent Runs** *(new, core ≥ 1.6 on `laravel/ai` ^0.11)* — the **shape** of a run, not just its
+  total: every generation step with its own cost share, every tool with the wall time it actually
+  took, failures shown as failures (including the seconds a tool burned **before** it threw), and the
+  **invocation chain** — which run called this one, through which tool call, and which runs it called
+  in turn. Each link is clickable, so a delegated agent is one hop away in either direction.
 - **Pricing** — multi-source (LiteLLM ⊕ OpenRouter ⊕ manual) + sync + overrides; manual mask supports
   per-1M / EUR and **fal.ai media units** (per second/image/megapixel + unit rate).
 - **Diagnostics** — health + cost estimator, including **estimate-from-prompt** (server estimates tokens).
